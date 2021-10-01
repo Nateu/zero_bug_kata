@@ -18,13 +18,13 @@ class Game:
         self.isGettingOutOfPenaltyBox: bool = False
 
         for i in range(50):
-            self.popQuestions.append("Pop Question " + str(i))
-            self.scienceQuestions.append("Science Question " + str(i))
-            self.sportsQuestions.append("Sports Question " + str(i))
-            self.rockQuestions.append(self.createRockQuestion(i))
+            self.popQuestions.append(self.createQuestion("Pop", i))
+            self.scienceQuestions.append(self.createQuestion("Science", i))
+            self.sportsQuestions.append(self.createQuestion("Sports", i))
+            self.rockQuestions.append(self.createQuestion("Rock", i))
 
-    def createRockQuestion(self, index: int) -> str:
-        return "Rock Question " + str(index)
+    def createQuestion(self, cat: str, index: int) -> str:
+        return f"{cat} Question {index}"
 
     def add(self, playerName: str) -> bool:
         self.players.append(playerName)
