@@ -26,9 +26,6 @@ class Game:
     def createRockQuestion(self, index: int) -> str:
         return "Rock Question " + str(index)
 
-    def isPlayable(self) -> bool:
-        return (self.howManyPlayers() >= 2)
-
     def add(self, playerName: str) -> bool:
         self.players.append(playerName)
         self.places[self.howManyPlayers()] = 0
