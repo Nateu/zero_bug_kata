@@ -1,139 +1,128 @@
 from typing import List
 from collections import deque
 
-class Game:
+
+class Player:
+    def __init__(self, name: str):
+        self.name = name
+        self.purse = 0
+        self.in_penalty_box = False
+
+
+class Board:
     def __init__(self):
-        self.players: List[str] = []
-        self.places: List[int] = [0] * 6 
-        self.purses: List[int] = [0] * 6
-        self.inPenaltyBox: List[bool] = [False] * 6
+        self.pawn_location = dict()
 
-        # https://realpython.com/linked-lists-python/
-        self.popQuestions = deque()
-        self.scienceQuestions = deque()
-        self.sportsQuestions = deque()
-        self.rockQuestions = deque()
+    def place_pawn(self, pawn: int, place: int = 0):
+        self.pawn_location[pawn] = place
 
+    def move_pawn(self, pawn: int, steps: int):
+        self.pawn_location[pawn] = (self.pawn_location[pawn] + steps) % 12
+        return self.pawn_location[pawn]
+
+    def get_pawn_cat(self, pawn: int):
+        return self.get_cat(self.pawn_location[pawn])
+
+    def get_cat(self, place: int):
+        if place == 3 or place == 7 or place == 11: return "Rock"
+        if place == 0 or place == 4 or place == 8: return "Pop"
+        if place == 1 or place == 5 or place == 9: return "Science"
+        if place == 2 or place == 6 or place == 10: return "Sports"
+
+
+class QuestionsDecks:
+    def __init__(self):
+        self.pop_questions = deque()
+        self.science_questions = deque()
+        self.sports_questions = deque()
+        self.rock_questions = deque()
+
+        for i in range(50):
+            self.pop_questions.append(self.create_question("Pop", i))
+            self.science_questions.append(self.create_question("Science", i))
+            self.sports_questions.append(self.create_question("Sports", i))
+            self.rock_questions.append(self.create_question("Rock", i))
+
+    def create_question(self, cat: str, index: int) -> str:
+        return f"{cat} Question {index}"
+
+    def get_question(self, cat: str) -> str:
+        if cat == "Pop":
+            return self.pop_questions.popleft()
+        if cat == "Science":
+            return self.science_questions.popleft()
+        if cat == "Sports":
+            return self.sports_questions.popleft()
+        if cat == "Rock":
+            return self.rock_questions.popleft()
+
+class Game:
+    def __init__(self, coins_to_win: int = 6):
+        self.coins_to_win = coins_to_win
+        self.players: List[Player] = []
+        self.board = Board()
+        self.questions_decks = QuestionsDecks()
         self.currentPlayer = 0
         self.isGettingOutOfPenaltyBox: bool = False
 
-        for i in range(50):
-            self.popQuestions.append(self.createQuestion("Pop", i))
-            self.scienceQuestions.append(self.createQuestion("Science", i))
-            self.sportsQuestions.append(self.createQuestion("Sports", i))
-            self.rockQuestions.append(self.createQuestion("Rock", i))
-
-    def createQuestion(self, cat: str, index: int) -> str:
-        return f"{cat} Question {index}"
+    def current_player(self) -> Player:
+        return self.players[self.currentPlayer]
 
     def add(self, playerName: str) -> bool:
-        self.players.append(playerName)
-        self.places[self.howManyPlayers()] = 0
-        self.purses[self.howManyPlayers()] = 0
-        self.inPenaltyBox[self.howManyPlayers()] = False
-        print(playerName + " was added")
-        print("They are player number " + str(len(self.players)))
+        self.board.place_pawn(self.howManyPlayers())
+        self.players.append(Player(playerName))
+        print(f"{playerName} was added")
+        print(f"They are player number {self.howManyPlayers()}")
         return True
 
     def howManyPlayers(self) -> int:
         return len(self.players)
 
     def roll(self, roll: int) -> None:
-        print(self.players[self.currentPlayer] + " is the current player")
-        print("They have rolled a " + str(roll))
+        print(f"{self.current_player().name} is the current player")
+        print(f"They have rolled a {roll}")
 
-        if self.inPenaltyBox[self.currentPlayer]:
+        if self.current_player().in_penalty_box:
             if roll % 2 != 0:
+                print(f"{self.current_player().name} is getting out of the penalty box")
                 self.isGettingOutOfPenaltyBox = True
-                print(
-                    self.players[self.currentPlayer] +
-                    " is getting out of the penalty box")
                 self.movePlayerAndAskQuestion(roll)
             else:
-                print(
-                    self.players[self.currentPlayer] +
-                    " is not getting out of the penalty box")
+                print(f"{self.current_player().name} is not getting out of the penalty box")
                 self.isGettingOutOfPenaltyBox = False
         else:
             self.movePlayerAndAskQuestion(roll)
 
     def movePlayerAndAskQuestion(self, roll: int) -> None:
-        self.places[self.currentPlayer] = self.places[self.currentPlayer] + roll
-        if self.places[self.currentPlayer] > 11:
-            self.places[self.currentPlayer] = self.places[self.currentPlayer] - 12
+        current_place = self.board.move_pawn(self.currentPlayer, roll)
+        current_cat = self.board.get_pawn_cat(self.currentPlayer)
+        print(f"{self.current_player().name}'s new location is {current_place}")
+        print(f"The category is {current_cat}")
+        print(self.questions_decks.get_question(current_cat))
 
-        print(self.players[self.currentPlayer] + "'s new location is " +
-            str(self.places[self.currentPlayer]))
-        print("The category is " + self.currentCategory())
-        self.askQuestion()
+    def goto_next_player(self):
+        self.currentPlayer = (self.currentPlayer + 1) % self.howManyPlayers()
 
-    def askQuestion(self) -> None:
-        if self.currentCategory() == "Pop":
-            print(self.popQuestions.popleft())
-        if self.currentCategory() == "Science":
-            print(self.scienceQuestions.popleft())
-        if self.currentCategory() == "Sports":
-            print(self.sportsQuestions.popleft())
-        if self.currentCategory() == "Rock":
-            print(self.rockQuestions.popleft())
-
-    def currentCategory(self) -> str:
-        if self.places[self.currentPlayer] == 0: return "Pop"
-        if self.places[self.currentPlayer] == 4: return "Pop"
-        if self.places[self.currentPlayer] == 8: return "Pop"
-        if self.places[self.currentPlayer] == 1: return "Science"
-        if self.places[self.currentPlayer] == 5: return "Science"
-        if self.places[self.currentPlayer] == 9: return "Science"
-        if self.places[self.currentPlayer] == 2: return "Sports"
-        if self.places[self.currentPlayer] == 6: return "Sports"
-        if self.places[self.currentPlayer] == 10: return "Sports"
-        return "Rock"
+    def gain_coin(self):
+        self.current_player().purse += 1
+        print(f"{self.current_player().name} now has {self.current_player().purse} Gold Coins.")
 
     def was_correctly_answered(self) -> bool:
-        if self.inPenaltyBox[self.currentPlayer]:
-            if self.isGettingOutOfPenaltyBox:
-                print("Answer was correct!!!!")
-                self.currentPlayer += 1
-                if self.currentPlayer == len(self.players):
-                    self.currentPlayer = 0
-                self.purses[self.currentPlayer] += 1
-                print(
-                    self.players[self.currentPlayer] + " now has " +
-                    str(self.purses[self.currentPlayer]) + " Gold Coins.")
-
-                winner = self.didPlayerWin()
-
-                return winner
-            else:
-                self.currentPlayer += 1
-                if self.currentPlayer == len(self.players):
-                    self.currentPlayer = 0
-                return True
+        if self.current_player().in_penalty_box and not self.isGettingOutOfPenaltyBox:
+            self.goto_next_player()
+            return False
         else:
-            print("Answer was corrent!!!!")
-            self.purses[self.currentPlayer] += 1
-            print(
-                self.players[self.currentPlayer] + " now has " +
-                str(self.purses[self.currentPlayer]) + " Gold Coins.")
-
-            winner = self.didPlayerWin()
-            self.currentPlayer += 1
-            if self.currentPlayer == len(self.players):
-                self.currentPlayer = 0
-
-            return winner
+            print("Answer was correct!!!!")
+            self.gain_coin()
+            current_player_won = self.current_player().purse == self.coins_to_win
+            if current_player_won:
+                print (f"{self.current_player().name} has won!!")
+            self.goto_next_player()
+            return current_player_won
 
     def wrong_answer(self) -> bool:
         print("Question was incorrectly answered")
-        print(
-            self.players[self.currentPlayer] +
-            " was sent to the penalty box")
-        self.inPenaltyBox[self.currentPlayer] = True
-
-        self.currentPlayer += 1
-        if self.currentPlayer == len(self.players):
-            self.currentPlayer = 0
-        return True
-
-    def didPlayerWin(self) -> bool:
-        return not self.purses[self.currentPlayer] == 6
+        print(f"{self.current_player().name} was sent to the penalty box")
+        self.current_player().in_penalty_box = True
+        self.goto_next_player()
+        return False

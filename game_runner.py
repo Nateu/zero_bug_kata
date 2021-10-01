@@ -9,9 +9,9 @@ def write_log(s: str):
 
 if __name__ == '__main__':
 
-    not_a_winner = False
+    winner = False
 
-    game = Game()
+    game = Game(15)
 
     game.add('Chet')
     write_log("game.add('Chet')")
@@ -26,10 +26,10 @@ if __name__ == '__main__':
         write_log(f"game.roll({roll})")
 
         if randrange(9) == 7:
-            not_a_winner = game.wrong_answer()
+            winner = game.wrong_answer()
             write_log("game.wrong_answer()")
         else:
-            not_a_winner = game.was_correctly_answered()
+            winner = game.was_correctly_answered()
             write_log("game.was_correctly_answered()")
         
-        if not not_a_winner: break
+        if winner: break
