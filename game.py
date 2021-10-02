@@ -86,9 +86,13 @@ class Game:
     def player_count(self) -> int:
         return len(self.players)
 
-    def roll(self, roll: int) -> None:
-        print(f"{self.get_current_player().name} is the current player.\nThey have rolled a {roll}.")
+    def set_new_current_player(self):
+        self.next_players_turn()
         self.is_getting_out_of_penalty_box = False
+
+    def roll(self, roll: int) -> None:
+        self.set_new_current_player()
+        print(f"{self.get_current_player().name} is the current player.\nThey have rolled a {roll}.")
 
         if self.board.is_pawn_in_penalty_box(self.current_player_index):
             if roll % 2 != 0:
@@ -116,16 +120,15 @@ class Game:
         return self.get_current_player().purse == self.amount_of_coins_to_win
 
     def check_for_win_or_make_next_player_current(self):
-        current_player_won = self.check_if_current_player_has_won()
-        if current_player_won:
+        if self.check_if_current_player_has_won():
             print (f"{self.get_current_player().name} has won!!")
-        self.next_players_turn()
-        return current_player_won
+        return self.check_if_current_player_has_won()
 
     def correctly_answered(self) -> bool:
         if not self.board.is_pawn_in_penalty_box(self.current_player_index) or self.is_getting_out_of_penalty_box:
             print("Answer was correct!!!!")
             self.current_player_gains_coin()
+            self.board.remove_pawn_from_penalty_box(self.current_player_index)
         return self.check_for_win_or_make_next_player_current()
 
     def incorrectly_answered(self) -> bool:
