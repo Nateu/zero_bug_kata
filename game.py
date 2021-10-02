@@ -3,7 +3,7 @@ from collections import deque
 
 
 class Player:
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self.name = name
         self.purse = 0
 
@@ -14,12 +14,12 @@ class Player:
         self.purse += amount
         return self.get_wealth()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.name
 
 
 class Board:
-    def __init__(self):
+    def __init__(self) -> None:
         self.pawn_location = dict()
         self.pawn_penalty_box = dict()
 
@@ -50,7 +50,7 @@ class Board:
 
 
 class QuestionsDecks:
-    def __init__(self):
+    def __init__(self) -> None:
         self.decks = dict()
         self.decks["Pop"] = deque()
         self.decks["Science"] = deque()
@@ -71,7 +71,7 @@ class QuestionsDecks:
 
 
 class Game:
-    def __init__(self, coins_to_win: int = 6):
+    def __init__(self, coins_to_win: int = 6) -> None:
         self.amount_of_coins_to_win = coins_to_win
         self.players: List[Player] = []
         self.board = Board()
@@ -103,14 +103,14 @@ class Game:
         else:
             self.move_player_and_ask_question(roll)
 
-    def set_new_current_player(self):
+    def set_new_current_player(self) -> None:
         self.next_players_turn()
         self.is_getting_out_of_penalty_box = False
 
     def get_current_player(self) -> Player:
         return self.players[self.current_player_index]
 
-    def next_players_turn(self):
+    def next_players_turn(self) -> None:
         self.current_player_index = (self.current_player_index + 1) % self.player_count()
 
     def move_player_and_ask_question(self, roll: int) -> None:
@@ -125,15 +125,15 @@ class Game:
             self.board.remove_pawn_from_penalty_box(self.current_player_index)
         return self.finish_turn()
 
-    def current_player_gains_coin(self):
+    def current_player_gains_coin(self) -> None:
         print(f"{self.get_current_player()} now has {self.get_current_player().add_coins()} Gold Coins.")
 
-    def finish_turn(self):
+    def finish_turn(self) -> bool:
         if self.check_if_current_player_has_won():
             print (f"{self.get_current_player()} has won!!")
         return self.check_if_current_player_has_won()
 
-    def check_if_current_player_has_won(self):
+    def check_if_current_player_has_won(self) -> bool:
         return self.get_current_player().get_wealth() == self.amount_of_coins_to_win
 
     def incorrectly_answered(self) -> bool:
