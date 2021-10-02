@@ -120,8 +120,7 @@ class Game:
             return current_player_won
 
     def incorrectly_answered(self) -> bool:
-        print("Question was incorrectly answered.")
-        print(f"{self.get_current_player().name} was sent to the penalty box.")
+        print(f"Question was incorrectly answered.\n{self.get_current_player().name} was sent to the penalty box.")
         self.get_current_player().in_penalty_box = True
         self.next_players_turn()
         return False
