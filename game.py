@@ -38,31 +38,26 @@ class Board:
     def is_pawn_in_penalty_box(self, pawn: int) -> bool:
         return self.pawn_penalty_box[pawn]
 
+
 class QuestionsDecks:
     def __init__(self):
-        self.pop_questions = deque()
-        self.science_questions = deque()
-        self.sports_questions = deque()
-        self.rock_questions = deque()
+        self.decks = dict()
+        self.decks["Pop"] = deque()
+        self.decks["Science"] = deque()
+        self.decks["Sports"] = deque()
+        self.decks["Rock"] = deque()
 
         for counter in range(50):
-            self.pop_questions.append(self.create_question("Pop", counter))
-            self.science_questions.append(self.create_question("Science", counter))
-            self.sports_questions.append(self.create_question("Sports", counter))
-            self.rock_questions.append(self.create_question("Rock", counter))
+            self.decks["Pop"].append(self.create_question("Pop", counter))
+            self.decks["Science"].append(self.create_question("Science", counter))
+            self.decks["Sports"].append(self.create_question("Sports", counter))
+            self.decks["Rock"].append(self.create_question("Rock", counter))
 
     def create_question(self, category: str, index: int) -> str:
         return f"{category} Question {index}"
 
     def get_question(self, category: str) -> str:
-        if category == "Pop":
-            return self.pop_questions.popleft()
-        if category == "Science":
-            return self.science_questions.popleft()
-        if category == "Sports":
-            return self.sports_questions.popleft()
-        if category == "Rock":
-            return self.rock_questions.popleft()
+        return self.decks[category].popleft()
 
 class Game:
     def __init__(self, coins_to_win: int = 6):
