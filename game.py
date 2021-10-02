@@ -19,25 +19,25 @@ class Player:
 
 
 class Board:
-    def __init__(self) -> None:
+    def __init__(self, size: int = 12, categories: [str] = ["Pop", "Science", "Sports", "Rock"]) -> None:
         self.pawn_location = dict()
         self.pawn_penalty_box = dict()
+        self.categories = categories
+        self.size = size
 
     def place_pawn(self, pawn: int, place: int = 0) -> None:
         self.pawn_location[pawn] = place
 
     def move_pawn(self, pawn: int, steps: int) -> int:
-        self.pawn_location[pawn] = (self.pawn_location[pawn] + steps) % 12
+        self.pawn_location[pawn] = (self.pawn_location[pawn] + steps) % self.size
         return self.pawn_location[pawn]
 
     def get_pawns_category(self, pawn: int) -> str:
         return self.get_category(self.pawn_location[pawn])
 
     def get_category(self, place: int) -> str:
-        if place == 3 or place == 7 or place == 11: return "Rock"
-        if place == 0 or place == 4 or place == 8: return "Pop"
-        if place == 1 or place == 5 or place == 9: return "Science"
-        if place == 2 or place == 6 or place == 10: return "Sports"
+        number_of_categories = len(self.categories)
+        return self.categories[place % number_of_categories]
 
     def put_pawn_in_penalty_box(self, pawn: int) -> None:
         self.pawn_penalty_box[pawn] = True
@@ -48,38 +48,43 @@ class Board:
     def is_pawn_in_penalty_box(self, pawn: int) -> bool:
         return self.pawn_penalty_box[pawn]
 
+    def list_all_categories(self) -> [str]:
+        return self.categories
+
 
 class QuestionsDecks:
-    def __init__(self) -> None:
+    def __init__(self, categories: [str]) -> None:
         self.decks = dict()
-        self.decks["Pop"] = deque()
-        self.decks["Science"] = deque()
-        self.decks["Sports"] = deque()
-        self.decks["Rock"] = deque()
+        for category in categories:
+            self.decks[category] = deque()
 
         for counter in range(50):
-            self.decks["Pop"].append(self.create_question("Pop", counter))
-            self.decks["Science"].append(self.create_question("Science", counter))
-            self.decks["Sports"].append(self.create_question("Sports", counter))
-            self.decks["Rock"].append(self.create_question("Rock", counter))
+            for category, deck in self.decks.items():
+                deck.append(self.create_question(category, counter))
 
     def create_question(self, category: str, index: int) -> str:
         return f"{category} Question {index}"
 
     def get_question(self, category: str) -> str:
-        return self.decks[category].popleft()
+        question = self.decks[category].popleft()
+        self.decks[category].append(question)
+        return question
 
 
 class Game:
-    def __init__(self, coins_to_win: int = 6) -> None:
+    def __init__(self, coins_to_win: int = 6, max_players: int = 6) -> None:
         self.amount_of_coins_to_win = coins_to_win
         self.players: List[Player] = []
         self.board = Board()
-        self.questions_decks = QuestionsDecks()
+        self.questions_decks = QuestionsDecks(self.board.list_all_categories())
         self.current_player_index = -1
         self.is_getting_out_of_penalty_box: bool = False
+        self.max_players = max_players
 
     def add_player(self, player_name: str) -> bool:
+        if self.player_count() >= self.max_players:
+            print(f"Max number of players is {self.max_players}.")
+            return False
         self.board.place_pawn(self.player_count())
         self.board.remove_pawn_from_penalty_box(self.player_count())
         self.players.append(Player(player_name))
@@ -90,6 +95,9 @@ class Game:
         return len(self.players)
 
     def roll(self, roll: int) -> None:
+        if self.player_count() < 2:
+            print(f"Min number of players is 2.")
+            return False
         self.set_new_current_player()
         print(f"{self.get_current_player()} is the current player.\nThey have rolled a {roll}.")
 
