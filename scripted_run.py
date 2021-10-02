@@ -1,10 +1,15 @@
 from game import Game
 
 if __name__ == '__main__':
-    game = Game(15)
+    game = Game(8)
     game.add_player('Chet')
+    game.roll(1)
     game.add_player('Pat')
     game.add_player('Sue')
+    game.add_player('Will')
+    game.add_player('Jane')
+    game.add_player('Dick')
+    game.add_player('Flint')
     game.roll(1)
     game.correctly_answered()
     game.roll(1)
