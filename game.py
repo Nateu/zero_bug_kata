@@ -70,11 +70,8 @@ class Game:
         self.players: List[Player] = []
         self.board = Board()
         self.questions_decks = QuestionsDecks()
-        self.current_player_index = 0
+        self.current_player_index = -1
         self.is_getting_out_of_penalty_box: bool = False
-
-    def get_current_player(self) -> Player:
-        return self.players[self.current_player_index]
 
     def add_player(self, player_name: str) -> bool:
         self.board.place_pawn(self.player_count())
@@ -85,10 +82,6 @@ class Game:
 
     def player_count(self) -> int:
         return len(self.players)
-
-    def set_new_current_player(self):
-        self.next_players_turn()
-        self.is_getting_out_of_penalty_box = False
 
     def roll(self, roll: int) -> None:
         self.set_new_current_player()
@@ -104,34 +97,41 @@ class Game:
         else:
             self.move_player_and_ask_question(roll)
 
-    def move_player_and_ask_question(self, roll: int) -> None:
-        current_place = self.board.move_pawn(self.current_player_index, roll)
-        current_category = self.board.get_pawns_category(self.current_player_index)
-        print(f"{self.get_current_player().name}'s new location is {current_place}.\nThe category is {current_category}.\n{self.questions_decks.get_question(current_category)}.")
+    def set_new_current_player(self):
+        self.next_players_turn()
+        self.is_getting_out_of_penalty_box = False
+
+    def get_current_player(self) -> Player:
+        return self.players[self.current_player_index]
 
     def next_players_turn(self):
         self.current_player_index = (self.current_player_index + 1) % self.player_count()
 
-    def current_player_gains_coin(self):
-        self.get_current_player().purse += 1
-        print(f"{self.get_current_player().name} now has {self.get_current_player().purse} Gold Coins.")
-
-    def check_if_current_player_has_won(self):
-        return self.get_current_player().purse == self.amount_of_coins_to_win
-
-    def check_for_win_or_make_next_player_current(self):
-        if self.check_if_current_player_has_won():
-            print (f"{self.get_current_player().name} has won!!")
-        return self.check_if_current_player_has_won()
+    def move_player_and_ask_question(self, roll: int) -> None:
+        current_place = self.board.move_pawn(self.current_player_index, roll)
+        current_category = self.board.get_pawns_category(self.current_player_index)
+        print(f"{self.get_current_player().name}'s new location is {current_place}.\nThe category is {current_category}.\n{self.questions_decks.get_question(current_category)}.")
 
     def correctly_answered(self) -> bool:
         if not self.board.is_pawn_in_penalty_box(self.current_player_index) or self.is_getting_out_of_penalty_box:
             print("Answer was correct!!!!")
             self.current_player_gains_coin()
             self.board.remove_pawn_from_penalty_box(self.current_player_index)
-        return self.check_for_win_or_make_next_player_current()
+        return self.finish_turn()
+
+    def current_player_gains_coin(self):
+        self.get_current_player().purse += 1
+        print(f"{self.get_current_player().name} now has {self.get_current_player().purse} Gold Coins.")
+
+    def finish_turn(self):
+        if self.check_if_current_player_has_won():
+            print (f"{self.get_current_player().name} has won!!")
+        return self.check_if_current_player_has_won()
+
+    def check_if_current_player_has_won(self):
+        return self.get_current_player().purse == self.amount_of_coins_to_win
 
     def incorrectly_answered(self) -> bool:
         print(f"Question was incorrectly answered.\n{self.get_current_player().name} was sent to the penalty box.")
         self.board.put_pawn_in_penalty_box(self.current_player_index)
-        return self.check_for_win_or_make_next_player_current()
+        return self.finish_turn()
