@@ -13,23 +13,23 @@ if __name__ == '__main__':
 
     game = Game(15)
 
-    game.add('Chet')
-    write_log("game.add('Chet')")
-    game.add('Pat')
-    write_log("game.add('Pat')")
-    game.add('Sue')
-    write_log("game.add('Sue')")
+    game.add_player('Chet')
+    write_log("game.add_player('Chet')")
+    game.add_player('Pat')
+    write_log("game.add_player('Pat')")
+    game.add_player('Sue')
+    write_log("game.add_player('Sue')")
 
     while True:
-        roll = randrange(5) + 1
+        roll = randrange(5) + 1 # roll a d6
         game.roll(roll)
         write_log(f"game.roll({roll})")
 
-        if randrange(9) == 7:
-            winner = game.wrong_answer()
-            write_log("game.wrong_answer()")
+        if randrange(9) == 7: # one in 9 chance someone answers wrong
+            winner = game.incorrectly_answered()
+            write_log("game.incorrectly_answered()")
         else:
-            winner = game.was_correctly_answered()
-            write_log("game.was_correctly_answered()")
+            winner = game.correctly_answered()
+            write_log("game.correctly_answered()")
         
         if winner: break
