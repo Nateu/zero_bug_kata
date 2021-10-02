@@ -20,10 +20,10 @@ class Board:
         self.pawn_location[pawn] = (self.pawn_location[pawn] + steps) % 12
         return self.pawn_location[pawn]
 
-    def get_pawn_cat(self, pawn: int):
-        return self.get_cat(self.pawn_location[pawn])
+    def get_pawns_category(self, pawn: int):
+        return self.get_category(self.pawn_location[pawn])
 
-    def get_cat(self, place: int):
+    def get_category(self, place: int):
         if place == 3 or place == 7 or place == 11: return "Rock"
         if place == 0 or place == 4 or place == 8: return "Pop"
         if place == 1 or place == 5 or place == 9: return "Science"
@@ -43,17 +43,17 @@ class QuestionsDecks:
             self.sports_questions.append(self.create_question("Sports", i))
             self.rock_questions.append(self.create_question("Rock", i))
 
-    def create_question(self, cat: str, index: int) -> str:
-        return f"{cat} Question {index}"
+    def create_question(self, category: str, index: int) -> str:
+        return f"{category} Question {index}"
 
-    def get_question(self, cat: str) -> str:
-        if cat == "Pop":
+    def get_question(self, category: str) -> str:
+        if category == "Pop":
             return self.pop_questions.popleft()
-        if cat == "Science":
+        if category == "Science":
             return self.science_questions.popleft()
-        if cat == "Sports":
+        if category == "Sports":
             return self.sports_questions.popleft()
-        if cat == "Rock":
+        if category == "Rock":
             return self.rock_questions.popleft()
 
 class Game:
@@ -68,10 +68,10 @@ class Game:
     def get_current_player(self) -> Player:
         return self.players[self.current_player_index]
 
-    def add_player(self, playerName: str) -> bool:
+    def add_player(self, player_name: str) -> bool:
         self.board.place_pawn(self.player_count())
-        self.players.append(Player(playerName))
-        print(f"{playerName} was added.\nThey are player number {self.player_count()}.")
+        self.players.append(Player(player_name))
+        print(f"{player_name} was added.\nThey are player number {self.player_count()}.")
         return True
 
     def player_count(self) -> int:
@@ -93,8 +93,8 @@ class Game:
 
     def move_player_and_ask_question(self, roll: int) -> None:
         current_place = self.board.move_pawn(self.current_player_index, roll)
-        current_cat = self.board.get_pawn_cat(self.current_player_index)
-        print(f"{self.get_current_player().name}'s new location is {current_place}.\nThe category is {current_cat}.\n{self.questions_decks.get_question(current_cat)}.")
+        current_category = self.board.get_pawns_category(self.current_player_index)
+        print(f"{self.get_current_player().name}'s new location is {current_place}.\nThe category is {current_category}.\n{self.questions_decks.get_question(current_category)}.")
 
     def next_players_turn(self):
         self.current_player_index = (self.current_player_index + 1) % self.player_count()
