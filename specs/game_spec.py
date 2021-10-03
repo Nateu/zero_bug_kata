@@ -1,4 +1,4 @@
-from mamba import describe, context, it, before, _describe
+from mamba import describe, context, it, before
 from expects import expect, equal
 from game import Game
 

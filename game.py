@@ -77,6 +77,7 @@ class Game:
         self.max_players = max_players
         self.current_player_index = -1
         self.is_getting_out_of_penalty_box: bool = False
+        # Dependancies change so these will be injected!
         self.players: List[Player] = []
         self.board = Board()
         self.questions_decks = QuestionsDecks(self.board.list_all_categories())
