@@ -14,7 +14,7 @@ pytest = "*"
 name = "args"
 version = "0.1.0"
 description = "Command Arguments for Humans."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -44,7 +44,7 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 name = "clint"
 version = "0.5.1"
 description = "Python Command Line Interface Tools"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -63,7 +63,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "coverage"
 version = "5.5"
 description = "Code coverage measurement for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
@@ -74,7 +74,7 @@ toml = ["toml"]
 name = "expects"
 version = "0.9.0"
 description = "Expressive and extensible TDD/BDD assertion library for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -90,7 +90,7 @@ python-versions = "*"
 name = "mamba"
 version = "0.11.2"
 description = "The definitive testing tool for Python. Born under the banner of Behavior Driven Development."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -186,7 +186,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "6fa69e72321be281c503cbd1ae389943a28cfe71bb327235311d158428fe34be"
+content-hash = "757f5597d897cd0869bab58b23ceb941b35266365827ea069ca6ec837ea43a08"
 
 [metadata.files]
 approvaltests = [

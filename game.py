@@ -63,7 +63,7 @@ class QuestionsDecks:
                 deck.append(self.create_question(category, counter))
 
     def create_question(self, category: str, index: int) -> str:
-        return f"{category} Question {index}"
+        return f"{category} Question {index + 1}"
 
     def get_question(self, category: str) -> str:
         question = self.decks[category].popleft()
@@ -99,12 +99,12 @@ class Game:
     def player_count(self) -> int:
         return len(self.players)
 
-    def roll(self, roll: int) -> None:
+    def roll(self, roll: int) -> str:
         if self.player_count() < 2:
             print(
-                f"Min number of players is 2."
+                "Min number of players is 2."
             )
-            return False
+            return None
         self.set_new_current_player()
         print(
             f"{self.get_current_player()} is the current player.\n" +
@@ -116,14 +116,14 @@ class Game:
                 print(
                     f"{self.get_current_player()} is not getting out of the penalty box."
                 )
-            else:
-                print(
-                    f"{self.get_current_player()} is getting out of the penalty box."
-                )
-                self.is_getting_out_of_penalty_box = True
-                self.move_player_and_ask_question(roll)
+                return None
+            print(
+                f"{self.get_current_player()} is getting out of the penalty box."
+            )
+            self.is_getting_out_of_penalty_box = True
+            return self.move_player_and_ask_question(roll)
         else:
-            self.move_player_and_ask_question(roll)
+            return self.move_player_and_ask_question(roll)
 
     def set_new_current_player(self) -> None:
         self.next_players_turn()
@@ -143,6 +143,7 @@ class Game:
             f"The category is {current_category}.\n" +
             f"{self.questions_decks.get_question(current_category)}."
         )
+        return current_category
 
     def correctly_answered(self) -> bool:
         if not self.board.is_pawn_in_penalty_box(self.current_player_index) or self.is_getting_out_of_penalty_box:
