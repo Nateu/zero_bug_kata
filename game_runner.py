@@ -1,5 +1,6 @@
-from random import randrange
+from random import randrange, seed
 from game import Game
+
 
 def write_log(s: str):
     with open("command.log", "a") as log_file:
@@ -19,6 +20,8 @@ if __name__ == '__main__':
     write_log("game.add('Pat')")
     game.add('Sue')
     write_log("game.add('Sue')")
+
+    seed(11)
 
     while True:
         roll = randrange(5) + 1

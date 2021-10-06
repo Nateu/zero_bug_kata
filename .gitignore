@@ -1,4 +1,6 @@
 htmlcov
 __pycache__/
+.idea/
 .coverage
 nohup.out
+/approval_test/*.received.txt
